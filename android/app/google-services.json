@@ -1,0 +1,101 @@
+{
+  "project_info": {
+    "project_number": "392478481812",
+    "firebase_url": "https://mychat-1c3ad.firebaseio.com",
+    "project_id": "mychat-1c3ad",
+    "storage_bucket": "mychat-1c3ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392478481812:android:72c1c56e504532b1",
+        "android_client_info": {
+          "package_name": "com.techienerd.mychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "392478481812-msbd5rofa6h1204cccanoao1cff02vlj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techienerd.mychat",
+            "certificate_hash": "3b9265f4d0fd9d0ceea07b925993835c5c4ffaf7"
+          }
+        },
+        {
+          "client_id": "392478481812-96ohbv7oeohf45qse9emllnm7qof1i8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techienerd.mychat",
+            "certificate_hash": "3349c1f3f997aba81abb9552783ee8627a120ab7"
+          }
+        },
+        {
+          "client_id": "392478481812-p2r8r9evi13s6mc7hgcjp8csb1saqlbd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techienerd.mychat",
+            "certificate_hash": "7e6614cc0bc4cfd0922c4a45b62ec664e3d31d30"
+          }
+        },
+        {
+          "client_id": "392478481812-rlmnao864f8410h8tmjtleers0fdq22u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN8-TzVOHQihBEiDf59W2X-9Mdpv9cbIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "392478481812-rlmnao864f8410h8tmjtleers0fdq22u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392478481812:android:2fe2d77c55733501f6c381",
+        "android_client_info": {
+          "package_name": "dev.jewel.mychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "392478481812-1ohm9ekqglprshmgpcstsa9g86v91fv2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.jewel.mychat",
+            "certificate_hash": "b6467522ce3f765eb51c562dc6a20434e1762e1a"
+          }
+        },
+        {
+          "client_id": "392478481812-rlmnao864f8410h8tmjtleers0fdq22u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN8-TzVOHQihBEiDf59W2X-9Mdpv9cbIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "392478481812-rlmnao864f8410h8tmjtleers0fdq22u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
