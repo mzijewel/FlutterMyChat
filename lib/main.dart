@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mychat/screens/splash/splashScreen.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/constants.dart';
 import 'package:mychat/utils/firestoreService.dart';
+import 'package:mychat/views/splashScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,15 +38,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.paused:
-        print('APP PAUSED');
         await FirestoreService.updateUserStatus(false);
         break;
       case AppLifecycleState.resumed:
-        print('APP RESUMED');
         FirestoreService.updateUserStatus(true);
         break;
       case AppLifecycleState.detached:
-        print('APP DETACHED');
         break;
     }
   }
@@ -56,11 +53,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: Constants.appName,
-      theme: ThemeData(
-        primaryColor: Constants.primaryColor,
-        accentColor: Constants.accentColor,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
       home: SplashScreen(),
     );
   }

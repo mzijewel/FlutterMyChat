@@ -8,10 +8,10 @@ import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mychat/models/User.dart';
-import 'package:mychat/screens/home/homeScreen.dart';
-import 'package:mychat/screens/login/loginScreen.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/firestoreService.dart';
+import 'package:mychat/views/homeScreen.dart';
+import 'package:mychat/views/loginScreen.dart';
 
 import 'authController.dart';
 
@@ -37,24 +37,62 @@ class AuthService {
     _user = user;
   }
 
+  Future<void> signInEmail(String email, String pass) async {
+    authController.isLoading.value = true;
+    User authUser;
+    await _auth
+        .signInWithEmailAndPassword(email: email, password: pass)
+        .then((value) {
+      if (value.user != null) {
+        authUser = value.user;
+      }
+    });
+    await _signIn(authUser);
+    authController.isLoading.value = false;
+  }
+
+  Future signupEmail(String name, String email, String pass) async {
+    bool isSuccess = false;
+    authController.isLoading.value = true;
+    User authUser;
+    await _auth
+        .createUserWithEmailAndPassword(email: email, password: pass)
+        .then((value) {
+      if (value.user != null) {
+        authUser = value.user;
+        isSuccess = true;
+      }
+    }).catchError((e) {
+      Fluttertoast.showToast(msg: '${e.message}');
+    });
+    if (isSuccess) {
+      _user =
+          MUser(name: name, email: email, docId: authUser.uid, isOnline: true);
+      var isCreated = await FirestoreService.createUser(_user);
+      if (isCreated) {
+        LocatorService.fcmService().getToken();
+        Get.offAll(HomeScreen());
+      }
+    }
+    authController.isLoading.value = false;
+  }
+
   Future<void> signInWithGoogle() async {
     authController.isLoading.value = true;
     try {
-      final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-      final AuthCredential authCredential =
-          GoogleAuthProvider.credential(idToken: googleSignInAuthentication.idToken, accessToken: googleSignInAuthentication.accessToken);
+      final GoogleSignInAccount googleSignInAccount =
+          await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
 
       User authUser;
 
       await _auth.signInWithCredential(authCredential).then((value) {
-        // setState(() {
-        //   _success = false;
-        // });
         if (value.user != null) {
           authUser = value.user;
-        } else {
-          print("Signed null: ");
         }
       });
 
@@ -73,7 +111,8 @@ class AuthService {
         print('s1');
         User authUser;
         await _auth
-            .signInWithCredential(FacebookAuthProvider.credential(result.accessToken.token))
+            .signInWithCredential(
+                FacebookAuthProvider.credential(result.accessToken.token))
             .catchError((err) => log('$err', name: 'FACEBOOK AUTH'))
             .then((value) {
           if (value != null) authUser = value.user;
@@ -93,7 +132,7 @@ class AuthService {
     }
   }
 
-  void _signIn(User authUser) async {
+  Future<void> _signIn(User authUser) async {
     if (authUser != null) {
       _user = await FirestoreService.checkUser(authUser.email);
       if (_user == null) {

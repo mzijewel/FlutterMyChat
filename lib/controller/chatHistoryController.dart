@@ -4,7 +4,7 @@ import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/firestoreService.dart';
 
 class ChatHistoryController extends GetxController {
-  var todoList = List<MRoom>.empty().obs;
+  var todoList = RxList<MRoom>();
 
   List<MRoom> get rooms => todoList.value;
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:mychat/screens/home/homeScreen.dart';
-import 'package:mychat/screens/login/loginScreen.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/constants.dart';
+import 'package:mychat/views/homeScreen.dart';
+import 'package:mychat/views/loginScreen.dart';
 
 class SplashScreen extends StatelessWidget {
   void _checkUser() async {
@@ -18,7 +18,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Constants.primaryColor,
       body: _buildBody(),
     );
   }
@@ -46,4 +46,3 @@ class SplashScreen extends StatelessWidget {
     }
   }
 }
-

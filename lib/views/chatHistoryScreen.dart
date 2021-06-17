@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:mychat/controller/chatHistoryController.dart';
 import 'package:mychat/models/mRoom.dart';
-import 'package:mychat/screens/chat/chatHistoryController.dart';
-import 'package:mychat/screens/groupScreen.dart';
-import 'package:mychat/screens/room/chatScreen.dart';
 import 'package:mychat/utils/constants.dart';
 import 'package:mychat/utils/utils.dart';
+import 'package:mychat/views/chatScreen.dart';
+import 'package:mychat/views/groupScreen.dart';
 
 class ChatHistoryScreen extends StatelessWidget {
   // final controller = Get.put<ChatHistoryController>(ChatHistoryController());
@@ -16,6 +16,7 @@ class ChatHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Constants.bodyColor,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -24,9 +25,15 @@ class ChatHistoryScreen extends StatelessWidget {
             GetX<ChatHistoryController>(
               init: Get.put<ChatHistoryController>(ChatHistoryController()),
               builder: (controller) {
-                if (controller != null && controller.rooms != null && controller.rooms.isNotEmpty) {
+                if (controller != null &&
+                    controller.rooms != null &&
+                    controller.rooms.isNotEmpty) {
                   return Expanded(
-                    child: ListView.builder(
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => Divider(
+                        color: Constants.txtColor2,
+                      ),
+                      physics: BouncingScrollPhysics(),
                       itemCount: controller.rooms.length,
                       itemBuilder: (context, index) {
                         MRoom room = controller.rooms[index];
@@ -35,7 +42,11 @@ class ChatHistoryScreen extends StatelessWidget {
                     ),
                   );
                 } else {
-                  return Center(child: Text('No chat history found'));
+                  return Center(
+                      child: Text(
+                    'No chat history found',
+                    style: TextStyle(color: Constants.txtColor2),
+                  ));
                 }
               },
             )
@@ -47,6 +58,7 @@ class ChatHistoryScreen extends StatelessWidget {
           Get.to(GroupScreen());
         },
         child: Icon(Icons.add),
+        backgroundColor: Constants.primaryColorDark,
       ),
     );
   }
@@ -89,20 +101,24 @@ class ChatHistoryScreen extends StatelessWidget {
                     children: [
                       Text(
                         '${room.title}',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Constants.txtColor1,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
                       Spacer(
                         flex: 1,
                       ),
                       Text(
                         Utils.getDateTimeStr(room.updatedAt),
-                        style: TextStyle(color: Colors.grey, fontSize: 10),
+                        style:
+                            TextStyle(color: Constants.txtColor2, fontSize: 10),
                       )
                     ],
                   ),
                   Text(
                     '${room.lastMsg ?? 'No message'}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: TextStyle(fontSize: 14, color: Constants.txtColor2),
                   ),
                 ],
               ),

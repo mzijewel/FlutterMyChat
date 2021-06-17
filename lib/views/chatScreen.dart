@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +10,6 @@ import 'package:mychat/models/mMessage.dart';
 import 'package:mychat/models/mRoom.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/constants.dart';
-import 'package:mychat/utils/customWidgets.dart';
 import 'package:mychat/utils/firebaseStorageService.dart';
 import 'package:mychat/utils/firestoreService.dart';
 import 'package:mychat/utils/utils.dart';
@@ -50,7 +48,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     super.dispose();
     _setActivityInRoom(false);
-    print('Out from Chat room');
   }
 
   String _getName() {
@@ -74,7 +71,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Constants.bodyColor,
       appBar: AppBar(
+        backgroundColor: Constants.primaryColor,
         title: Text(
           _getName(),
           style: TextStyle(color: Colors.white),
@@ -87,21 +86,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _leading() {
-    if (room != null && !room.isGroup)
-      return CustomWidgets.circleAvatar(room.getPhotoUrl());
-    else
-      return CircleAvatar(
-        maxRadius: 25,
-        foregroundColor: Colors.red,
-        backgroundColor: Constants.primaryColor,
-        child: Text(
-          '${room.title.substring(0, 1).toUpperCase()}',
-          style: TextStyle(color: Colors.white),
-        ),
-      );
-  }
-
   Widget _buildList() {
     if (room == null || room.docId == null)
       return Center(
@@ -111,80 +95,76 @@ class _ChatScreenState extends State<ChatScreen> {
       return StreamBuilder<QuerySnapshot>(
         stream: FirestoreService.getMessages(room.docId),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) return Center(child: Text('Something went wrong'));
-          if (snapshot.connectionState == ConnectionState.waiting) return Center(child: Text('Loading...'));
+          if (snapshot.hasError)
+            return Center(child: Text('Something went wrong'));
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Center(child: Text('Loading...'));
 
           return ListView.builder(
             reverse: true,
+            shrinkWrap: true,
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index) {
-              MMessage message = MMessage.fromMap(snapshot.data.docs[index].data());
-              return _buildMessage(message);
+              MMessage message =
+                  MMessage.fromMap(snapshot.data.docs[index].data());
+              return _buildRow(message);
             },
           );
         },
       );
   }
 
-  Widget _buildMessage(MMessage message) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: message.fromId == currentUser.docId ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Column(
+  Widget _buildRow(MMessage message) {
+    return Container(
+      padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+      child: Align(
+        alignment: message.fromId == currentUser.docId
+            ? Alignment.topRight
+            : Alignment.topLeft,
+        child: Container(
+          decoration: BoxDecoration(
+            color: message.fromId == currentUser.docId
+                ? Colors.teal.shade900
+                : Constants.primaryColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: message.fromId == currentUser.docId ? Colors.green[200] : Colors.black12,
-                  borderRadius: BorderRadius.circular(10),
+              if (room.isGroup && message.fromId != currentUser.docId)
+                Text(
+                  message.fromName ?? '',
+                  style: TextStyle(color: Constants.txtColor1),
                 ),
-                child: Column(
-                  children: [
-                    if (room.isGroup && message.fromId != currentUser.docId)
-                      Align(
-                        child: Text(
-                          message.fromName ?? '',
-                          style: TextStyle(color: Colors.green),
-                        ),
-                        alignment: Alignment.topLeft,
-                      ),
-                    Align(
-                      child: Text(message.message),
-                      alignment: Alignment.topLeft,
+              Text(
+                message.message,
+                style: TextStyle(color: Constants.txtColor1),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              if (message.imgUrl != null && message.imgUrl.isNotEmpty)
+                InkWell(
+                  onTap: () => _openImage(message.imgUrl),
+                  child: CachedNetworkImage(
+                    imageUrl: message.imgUrl,
+                    width: 50,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(),
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    if (message.imgUrl != null && message.imgUrl.isNotEmpty)
-                      InkWell(
-                        onTap: () => _openImage(message.imgUrl),
-                        child: CachedNetworkImage(
-                          imageUrl: message.imgUrl,
-                          width: 50,
-                          placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Align(
-                      child: Text(
-                        Utils.getDateTimeStr(message.createdAt),
-                        style: TextStyle(color: Colors.black, fontSize: 10),
-                      ),
-                      alignment: Alignment.bottomRight,
-                    ),
-                  ],
+                  ),
                 ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                Utils.getDateTimeStr(message.createdAt),
+                style: TextStyle(color: Constants.txtColor2, fontSize: 10),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -196,11 +176,19 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
               child: TextFormField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                    hintText: 'Message...',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.brown))),
-              )),
+            controller: _messageController,
+            decoration: InputDecoration(
+                hintText: 'Message...',
+                filled: true,
+                fillColor: Constants.primaryColor,
+                hintStyle: TextStyle(color: Constants.txtColor2),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(36),
+                    borderSide: BorderSide(color: Constants.txtColor2)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(36),
+                    borderSide: BorderSide(color: Colors.white))),
+          )),
           IconButton(
             icon: Icon(Icons.camera_alt),
             onPressed: () {
@@ -228,12 +216,13 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     _messageController.clear();
 
-    MMessage message =
-    MMessage(fromId: currentUser.docId, fromName: LocatorService
-        .authService()
-        .getUser()
-        .name, message: msg, createdAt: DateTime.now());
-    await FirestoreService.sendMessage(room.docId, message, pickedImgFile, false);
+    MMessage message = MMessage(
+        fromId: currentUser.docId,
+        fromName: LocatorService.authService().getUser().name,
+        message: msg,
+        createdAt: DateTime.now());
+    await FirestoreService.sendMessage(
+        room.docId, message, pickedImgFile, false);
 
     pickedImgFile = null;
 
@@ -241,14 +230,16 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _pickImage() async {
-    final pickedImage = await ImagePicker().getImage(source: ImageSource.gallery);
+    final pickedImage =
+        await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       pickedImgFile = File(pickedImage.path);
     }
   }
 
   void _getRoom() async {
-    room = await FirestoreService.getRoom(currentUser.docId, widget.toUser.docId);
+    room =
+        await FirestoreService.getRoom(currentUser.docId, widget.toUser.docId);
     if (room != null) {
       _setActivityInRoom(true);
       setState(() {});
@@ -256,7 +247,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _setActivityInRoom(bool isActive) async {
-    if (room != null) await FirestoreService.setActivityInRoom(room.docId, currentUser.docId, isActive);
+    if (room != null)
+      await FirestoreService.setActivityInRoom(
+          room.docId, currentUser.docId, isActive);
   }
 
   void _pushToInactiveMembers(String msg) async {
@@ -273,8 +266,8 @@ class _ChatScreenState extends State<ChatScreen> {
       for (String id in inactiveMembers) {
         MUser user = await FirestoreService.getUser(id);
         if (user != null) {
-          LocatorService.fcmService().pushTo('New message from ${currentUser.name}', msg, user.token);
-          log('push sent-${user.name}', name: 'CHAT SCREEN');
+          LocatorService.fcmService()
+              .pushTo('New message from ${currentUser.name}', msg, user.token);
         }
       }
     }

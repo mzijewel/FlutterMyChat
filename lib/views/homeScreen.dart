@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mychat/screens/chat/chatHistoryScreen.dart';
-import 'package:mychat/screens/friend/usersScreen.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/constants.dart';
 import 'package:mychat/utils/firestoreService.dart';
+import 'package:mychat/views/chatHistoryScreen.dart';
+import 'package:mychat/views/usersScreen.dart';
 
 class HomeScreen extends StatelessWidget {
   updateUser(bool isOnline) async {
@@ -20,14 +20,16 @@ class HomeScreen extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            backgroundColor: Constants.primaryColor,
             title: Text(
               Constants.appName,
               style: TextStyle(color: Colors.white),
             ),
             iconTheme: new IconThemeData(color: Colors.white),
-            actions: <Widget>[
+            actions: [
               PopupMenuButton<String>(
                 onSelected: handleClick,
+                color: Constants.primaryColorDark,
                 itemBuilder: (BuildContext context) {
                   return {'Sign out'}.map((String choice) {
                     return PopupMenuItem<String>(
@@ -38,12 +40,12 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
             ],
-            bottom: new TabBar(
+            bottom: TabBar(
               isScrollable: false,
               labelColor: Colors.white,
               unselectedLabelColor: Colors.white60,
-              tabs: ['CHATS', 'FRIENDS'].map((choice) {
-                return new Tab(
+              tabs: ['CHATS', 'USERS'].map((choice) {
+                return Tab(
                   text: choice,
                 );
               }).toList(),

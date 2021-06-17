@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mychat/controller/controllerUsers.dart';
 import 'package:mychat/models/User.dart';
-import 'package:mychat/screens/friend/controllerUsers.dart';
-import 'package:mychat/screens/room/chatScreen.dart';
+import 'package:mychat/utils/constants.dart';
 import 'package:mychat/utils/customWidgets.dart';
+import 'package:mychat/views/chatScreen.dart';
 
 class UsersScreen extends StatelessWidget {
   final controller = Get.put(ControllerUsers());
@@ -11,6 +12,7 @@ class UsersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Constants.bodyColor,
       body: Obx(() => _buildListView(controller.users)),
     );
   }
@@ -20,7 +22,10 @@ class UsersScreen extends StatelessWidget {
       return Center(
         child: Text('No users are there'),
       );
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(
+        color: Constants.txtColor2,
+      ),
       shrinkWrap: true,
       physics: BouncingScrollPhysics(),
       itemCount: users.length,

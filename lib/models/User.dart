@@ -8,7 +8,17 @@ class MUser {
   bool isOnline;
   DateTime createdAt, updatedAt, loginAt;
 
-  MUser({this.name, this.token, this.email, this.phone, this.docId, this.photoUrl, this.loginAt, this.isOnline, this.createdAt, this.updatedAt});
+  MUser(
+      {this.name,
+      this.token,
+      this.email,
+      this.phone,
+      this.docId,
+      this.photoUrl,
+      this.loginAt,
+      this.isOnline,
+      this.createdAt,
+      this.updatedAt});
 
   MUser.fromMap(Map<String, dynamic> json) {
     name = Utils.getData(json, 'name');
@@ -30,14 +40,15 @@ class MUser {
       'phone': phone,
       'photoUrl': photoUrl,
       'isLogin': isOnline,
-      'loginAt': loginAt,
-      'updatedAt': updatedAt,
-      'createdAt': createdAt
+      'loginAt': loginAt ?? DateTime.now(),
+      'updatedAt': updatedAt ?? DateTime.now(),
+      'createdAt': createdAt ?? DateTime.now()
     };
   }
 
   static List<MUser> parseList(List<QueryDocumentSnapshot> snapshots) {
-    List<Map<String, dynamic>> mapList = snapshots.map((e) => FirestoreService.convertDocumentToMap(e)).toList();
+    List<Map<String, dynamic>> mapList =
+        snapshots.map((e) => FirestoreService.convertDocumentToMap(e)).toList();
     return mapList.map((e) => MUser.fromMap(e)).toList();
   }
 }

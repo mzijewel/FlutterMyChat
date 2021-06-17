@@ -3,9 +3,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:mychat/controller/controllerUsers.dart';
 import 'package:mychat/models/User.dart';
-import 'package:mychat/screens/friend/controllerUsers.dart';
 import 'package:mychat/service/locator.dart';
+import 'package:mychat/utils/constants.dart';
 import 'package:mychat/utils/customWidgets.dart';
 import 'package:mychat/utils/firestoreService.dart';
 
@@ -18,7 +19,9 @@ class GroupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Constants.bodyColor,
       appBar: AppBar(
+        backgroundColor: Constants.primaryColor,
         title: Text('Create Group'),
       ),
       body: _buildBody(),
@@ -31,25 +34,27 @@ class GroupScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
-            onChanged: (value) => groupName = value,
-            decoration: InputDecoration(
-              labelText: 'Group Name',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-            ),
+          CustomWidgets.inputField('Group Name', (value) => groupName = value),
+          SizedBox(
+            height: 0,
           ),
-          RaisedButton(
-            onPressed: () => _createGroup(),
-            child: Text('Create Group'),
+          Align(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              onPressed: () => _createGroup(),
+              child: Text('Create Group'),
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(36)),
+                  primary: Constants.primaryColorDark),
+            ),
           ),
           SizedBox(
             height: 10,
           ),
           Text(
             'Select members for this group',
-            style: TextStyle(color: Colors.black, fontSize: 18),
+            style: TextStyle(color: Constants.txtColor1, fontSize: 18),
           ),
           SizedBox(
             height: 10,

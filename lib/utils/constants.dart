@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  static Color primaryColor = Colors.green[800];
-  static Color accentColor = Colors.greenAccent;
+  static Color primaryColor = Colors.blueGrey[800];
+  static Color primaryColorDark = Colors.blueGrey[600];
+  static Color accentColor = Colors.blueGrey[600];
+  static Color bodyColor = Colors.blueGrey[900];
+  static Color txtColor1 = Colors.white;
+  static Color txtColor2 = Colors.white54;
 
   static final String tmpImgUrl =
-      'https://firebasestorage.googleapis.com/v0/b/mychat-1c3ad.appspot.com/o/1599936709013?alt=media&token=6d25b1f7-4faf-4d1d-8396-aad68b7918b6';
+      'https://firebasestorage.googleapis.com/v0/b/mychat-1c3ad.appspot.com/o/app%2Fapp_icon.png?alt=media&token=202f7ebf-dcf4-4114-8b25-78b5f34dfb42';
 
   static final String appName = 'My Chat';
   static final String fcmUrl = 'https://fcm.googleapis.com/fcm/send';
