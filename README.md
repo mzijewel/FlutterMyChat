@@ -3,8 +3,8 @@
 Chatting Application (Flutter)
 
 ## Screenshots
-![Scheme](Screenshots/1.png)
-![Scheme](Screenshots/2.png)
-![Scheme](Screenshots/3.png)
-![Scheme](Screenshots/4.png)
-![Scheme](Screenshots/5.png)
+![Scheme](screenshots/1.png)
+![Scheme](screenshots/2.png)
+![Scheme](screenshots/3.png)
+![Scheme](screenshots/4.png)
+![Scheme](screenshots/5.png)
