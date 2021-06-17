@@ -1,10 +1,12 @@
-# mychat
+# MyChat
 
 Chatting Application (Flutter)
 
 ## Screenshots
-![Scheme](screenshots/1.png)
-![Scheme](screenshots/2.png)
-![Scheme](screenshots/3.png)
-![Scheme](screenshots/4.png)
-![Scheme](screenshots/5.png)
+<p float="left">
+  <img src="screenshots/1.png" width="300" />
+  <img src="screenshots/2.png" width="300" />
+  <img src="screenshots/3.png" width="300" />
+  <img src="screenshots/4.png" width="300" />
+  <img src="screenshots/5.png" width="300" />
+</p>
