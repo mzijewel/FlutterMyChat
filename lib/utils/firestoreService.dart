@@ -143,7 +143,7 @@ class FirestoreService {
         .doc(userId)
         .collection(_friends)
         .where('isAccept', isEqualTo: isFriend)
-    // .where('toId', isEqualTo: userId)
+        // .where('toId', isEqualTo: userId)
         .get()
         .then((snapshot) {
       List<QueryDocumentSnapshot> docs = snapshot.docs;
@@ -175,6 +175,25 @@ class FirestoreService {
       id = value.id;
     });
     return id;
+  }
+
+  static Future updateMessageSeen(
+      String roomId, String messageId, String userId) async {
+    Seen seen = Seen(seenAt: DateTime.now());
+    Map<String, dynamic> map = {
+      'seen': FieldValue.arrayUnion([userId])
+    };
+
+    _firestore
+        .collection(_rooms)
+        .doc(roomId)
+        .collection(_messages)
+        .doc(messageId)
+        .update(map)
+        .whenComplete(() => print('SEEN DONE'))
+        .catchError((e) {
+      print('SEEN ERR: ${e.toString()}');
+    });
   }
 
   static Future<void> updateUserStatus(bool isOnline) async {

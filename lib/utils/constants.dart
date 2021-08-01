@@ -8,6 +8,9 @@ class Constants {
   static Color txtColor1 = Colors.white;
   static Color txtColor2 = Colors.white54;
 
+  static final assetTik = 'assets/tik.png';
+  static final assetTikDouble = 'assets/tik_double.png';
+
   static final String tmpImgUrl =
       'https://firebasestorage.googleapis.com/v0/b/mychat-1c3ad.appspot.com/o/app%2Fapp_icon.png?alt=media&token=202f7ebf-dcf4-4114-8b25-78b5f34dfb42';
 

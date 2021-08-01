@@ -9,8 +9,15 @@ class MMessage {
   DateTime createdAt;
   DateTime updatedAt;
   String fromName;
+  List<String> seen;
 
-  MMessage({this.message, this.fromId, this.imgUrl, this.createdAt, this.updatedAt, this.fromName});
+  MMessage(
+      {this.message,
+      this.fromId,
+      this.imgUrl,
+      this.createdAt,
+      this.updatedAt,
+      this.fromName});
 
   MMessage.fromMap(Map<String, dynamic> json) {
     docId = Utils.getData(json, 'docId');
@@ -18,6 +25,7 @@ class MMessage {
     fromId = Utils.getData(json, 'fromId');
     fromName = Utils.getData(json, 'fromName');
     imgUrl = Utils.getData(json, 'imgUrl');
+    seen = json['seen']?.cast<String>();
     createdAt = Utils.getDateTime(json['createdAt']);
     createdAt = Utils.getDateTime(json['updatedAt']);
   }
@@ -28,9 +36,14 @@ class MMessage {
       'fromId': fromId,
       'fromName': fromName,
       'imgUrl': imgUrl,
+      'seen': seen,
       'createdAt': createdAt ?? DateTime.now(),
       'updatedAt': updatedAt ?? DateTime.now()
     };
+  }
+
+  bool isSeen() {
+    return seen != null && seen.isNotEmpty;
   }
 
   static List<MMessage> parseList(List<QueryDocumentSnapshot> snapshots) {
@@ -40,5 +53,25 @@ class MMessage {
       return data;
     }).toList();
     return mapList.map((e) => MMessage.fromMap(e)).toList();
+  }
+
+  static MMessage parseMessage(QueryDocumentSnapshot documentSnapshot) {
+    MMessage message = MMessage.fromMap(documentSnapshot.data());
+    message.docId = documentSnapshot.id;
+    return message;
+  }
+}
+
+class Seen {
+  DateTime seenAt;
+
+  Seen({this.seenAt});
+
+  Seen.fromMap(Map<String, dynamic> map) {
+    seenAt = Utils.getDateTime(map['seenAt']);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'seenAt': seenAt ?? DateTime.now()};
   }
 }

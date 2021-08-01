@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mychat/models/User.dart';
 import 'package:mychat/models/mMessage.dart';
@@ -106,7 +107,8 @@ class _ChatScreenState extends State<ChatScreen> {
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index) {
               MMessage message =
-                  MMessage.fromMap(snapshot.data.docs[index].data());
+                  MMessage.parseMessage(snapshot.data.docs[index]);
+
               return _buildRow(message);
             },
           );
@@ -114,7 +116,16 @@ class _ChatScreenState extends State<ChatScreen> {
       );
   }
 
+  _updateMessageSeen(MMessage message) {
+    if (message.fromId != currentUser.docId && !message.isSeen()) {
+      FirestoreService.updateMessageSeen(
+          room.docId, message.docId, currentUser.docId);
+    }
+  }
+
   Widget _buildRow(MMessage message) {
+    _updateMessageSeen(message);
+
     return Container(
       padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Align(
@@ -130,8 +141,24 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           padding: const EdgeInsets.all(8),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: message.fromId == currentUser.docId
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
+              if (message.imgUrl != null && message.imgUrl.isNotEmpty)
+                InkWell(
+                  onTap: () => _openImage(message.imgUrl),
+                  child: CachedNetworkImage(
+                    imageUrl: message.imgUrl,
+                    width: Get.width * 0.6,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+              SizedBox(
+                height: 5,
+              ),
               if (room.isGroup && message.fromId != currentUser.docId)
                 Text(
                   message.fromName ?? '',
@@ -144,23 +171,25 @@ class _ChatScreenState extends State<ChatScreen> {
               SizedBox(
                 height: 5,
               ),
-              if (message.imgUrl != null && message.imgUrl.isNotEmpty)
-                InkWell(
-                  onTap: () => _openImage(message.imgUrl),
-                  child: CachedNetworkImage(
-                    imageUrl: message.imgUrl,
-                    width: 50,
-                    placeholder: (context, url) => Center(
-                      child: CircularProgressIndicator(),
-                    ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    Utils.getDateTimeStr(message.createdAt),
+                    style: TextStyle(color: Constants.txtColor2, fontSize: 10),
                   ),
-                ),
-              SizedBox(
-                height: 5,
-              ),
-              Text(
-                Utils.getDateTimeStr(message.createdAt),
-                style: TextStyle(color: Constants.txtColor2, fontSize: 10),
+                  if (message.fromId == currentUser.docId)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5, right: 5),
+                      child: Image.asset(
+                        message.isSeen()
+                            ? Constants.assetTikDouble
+                            : Constants.assetTik,
+                        width: 10,
+                        height: 10,
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
