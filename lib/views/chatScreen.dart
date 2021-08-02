@@ -83,7 +83,13 @@ class _ChatScreenState extends State<ChatScreen> {
         iconTheme: new IconThemeData(color: Colors.white),
       ),
       body: Column(
-        children: [Expanded(child: _buildList()), _buildSendMessage()],
+        children: [
+          Expanded(child: _buildList()),
+          _buildSendMessage(),
+          SizedBox(
+            height: 10,
+          )
+        ],
       ),
     );
   }
@@ -200,40 +206,59 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildSendMessage() {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-      child: Row(
-        children: [
-          Expanded(
-              child: TextFormField(
-            controller: _messageController,
-            decoration: InputDecoration(
-                hintText: 'Message...',
-                filled: true,
-                fillColor: Constants.primaryColor,
-                hintStyle: TextStyle(color: Constants.txtColor2),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(36),
-                    borderSide: BorderSide(color: Constants.txtColor2)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(36),
-                    borderSide: BorderSide(color: Colors.white))),
-          )),
-          IconButton(
-            icon: Icon(Icons.camera_alt),
-            onPressed: () {
-              _pickImage();
-            },
+    return Row(
+      children: [
+        SizedBox(
+          width: 10,
+        ),
+        Expanded(
+            child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: Row(
+            children: [
+              Expanded(
+                  child: TextFormField(
+                controller: _messageController,
+                style: TextStyle(color: Constants.txtColor1),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Type a message',
+                  filled: true,
+                  fillColor: Constants.primaryColor,
+                  hintStyle: TextStyle(color: Constants.txtColor2),
+                ),
+              )),
+              Container(
+                color: Constants.primaryColor,
+                child: IconButton(
+                  color: Colors.white,
+                  icon: Icon(Icons.camera_alt),
+                  onPressed: () {
+                    _pickImage();
+                  },
+                ),
+              ),
+            ],
           ),
-          IconButton(
+        )),
+        SizedBox(
+          width: 10,
+        ),
+        CircleAvatar(
+          radius: 25,
+          backgroundColor: Constants.primaryColor,
+          child: IconButton(
             color: _messageController.text.isEmpty ? Colors.grey : Colors.teal,
             icon: Icon(Icons.send),
             onPressed: () {
               _sendMessage();
             },
-          )
-        ],
-      ),
+          ),
+        ),
+        SizedBox(
+          width: 10,
+        ),
+      ],
     );
   }
 
