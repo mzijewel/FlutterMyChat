@@ -7,6 +7,7 @@ import 'package:mychat/controller/controllerUsers.dart';
 import 'package:mychat/models/User.dart';
 import 'package:mychat/models/mMessage.dart';
 import 'package:mychat/models/mRoom.dart';
+import 'package:mychat/models/unseenMessage.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/firebaseStorageService.dart';
 
@@ -21,9 +22,22 @@ class FirestoreService {
   static const String _isOnline = 'isLogin';
   static const String _friends = 'friends';
   static const String _messages = 'messages';
+  static const String _unseenMessages = 'unseenMessages';
   static const String _members = 'members';
   static const String _activeMembers = 'activeMembers';
   static final String _chatHistory = 'chatHistory';
+
+  static Stream<List<UnseenMessage>> unseenMessagesStream(String userId) {
+    return _firestore
+        .collection('$_users/$userId/$_unseenMessages')
+        .snapshots()
+        .handleError((e) => [])
+        .map((query) {
+      return query.docs
+          .map((e) => UnseenMessage.fromMap(convertDocumentToMap(e)))
+          .toList();
+    });
+  }
 
   static Stream<List<MRoom>> roomsStream(String userId) {
     return _firestore
@@ -177,23 +191,35 @@ class FirestoreService {
     return id;
   }
 
+  static void incrementUnseen(String userId, String roomId) {
+    log('increment: $userId : $roomId', name: 'FIRESTORE');
+    _firestore
+        .doc('$_users/$userId/$_unseenMessages/$roomId')
+        .set({'count': FieldValue.increment(1)}, SetOptions(merge: true));
+  }
+
   static Future updateMessageSeen(
       String roomId, String messageId, String userId) async {
-    Seen seen = Seen(seenAt: DateTime.now());
+    print('call update seen : $userId : $messageId : $roomId}');
     Map<String, dynamic> map = {
       'seen': FieldValue.arrayUnion([userId])
     };
 
     _firestore
-        .collection(_rooms)
-        .doc(roomId)
-        .collection(_messages)
-        .doc(messageId)
+        .doc('$_rooms/$roomId/$_messages/$messageId')
         .update(map)
-        .whenComplete(() => print('SEEN DONE'))
+        .then((value) => print('SEEN DONE'))
         .catchError((e) {
       print('SEEN ERR: ${e.toString()}');
     });
+
+    _firestore
+        .doc('$_users/$userId/$_unseenMessages/$roomId')
+        .set({'count': 0}, SetOptions(merge: true))
+        .then((value) => print('count set to 0'))
+        .catchError((e) {
+          print('SEEN ERR: ${e.toString()}');
+        });
   }
 
   static Future<void> updateUserStatus(bool isOnline) async {
@@ -271,9 +297,8 @@ class FirestoreService {
     await _firestore
         .collection(_rooms)
         .doc(roomId)
-        .collection('messages')
-        .doc()
-        .set(message.toMap());
+        .collection(_messages)
+        .add(message.toMap());
     await _firestore.collection(_rooms).doc(roomId).update(data);
   }
 

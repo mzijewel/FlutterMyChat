@@ -11,11 +11,21 @@ class MRoom {
   List<String> members;
   bool isGroup;
   DateTime updatedAt;
+  int unseenCount;
   Map<String, dynamic> avatars;
 
   MUser user;
 
-  MRoom({this.title, this.lastFromId, this.members, this.isGroup = false, this.lastMsg, this.updatedAt, this.docId, this.user, this.avatars});
+  MRoom(
+      {this.title,
+      this.lastFromId,
+      this.members,
+      this.isGroup = false,
+      this.lastMsg,
+      this.updatedAt,
+      this.docId,
+      this.user,
+      this.avatars});
 
   MRoom.fromMap(Map<String, dynamic> json) {
     docId = Utils.getData(json, 'docId');
@@ -27,6 +37,7 @@ class MRoom {
     updatedAt = Utils.getDateTime(json['updatedAt']);
     avatars = json['avatars'] ?? {};
     title = json['title'] ?? getTitle();
+    unseenCount = 0;
   }
 
   String getTitle() {

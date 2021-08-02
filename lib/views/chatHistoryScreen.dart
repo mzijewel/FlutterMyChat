@@ -31,8 +31,8 @@ class ChatHistoryScreen extends StatelessWidget {
                   return Expanded(
                     child: ListView.separated(
                       separatorBuilder: (context, index) => Divider(
-                        color: Constants.txtColor2,
-                      ),
+                        // color: Constants.txtColor2,
+                          ),
                       physics: BouncingScrollPhysics(),
                       itemCount: controller.rooms.length,
                       itemBuilder: (context, index) {
@@ -116,9 +116,31 @@ class ChatHistoryScreen extends StatelessWidget {
                       )
                     ],
                   ),
-                  Text(
-                    '${room.lastMsg ?? 'No message'}',
-                    style: TextStyle(fontSize: 14, color: Constants.txtColor2),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${room.lastMsg ?? 'No message'}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Constants.txtColor2,
+                          ),
+                        ),
+                      ),
+                      if (room.unseenCount > 0)
+                        CircleAvatar(
+                          radius: 15,
+                          child: Text(
+                            '${room.unseenCount}',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        )
+                    ],
                   ),
                 ],
               ),

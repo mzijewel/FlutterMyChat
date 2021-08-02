@@ -37,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     currentUser = LocatorService.authService().getUser();
+    print('user ${currentUser.docId}');
     room = widget.room;
     if (room == null || room.docId == null)
       _getRoom();
@@ -282,6 +283,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _pushToInactiveMembers(String msg) async {
+    print('call push: ${room.docId}');
     final activeMembers = await FirestoreService.getActiveMembers(room.docId);
     List<String> inactiveMembers = [];
     room.members.forEach((element) {
@@ -293,10 +295,13 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     if (inactiveMembers.isNotEmpty) {
       for (String id in inactiveMembers) {
+        print('user: $id');
         MUser user = await FirestoreService.getUser(id);
         if (user != null) {
+          print('send : ${user.docId}');
           LocatorService.fcmService()
               .pushTo('New message from ${currentUser.name}', msg, user.token);
+          FirestoreService.incrementUnseen(user.docId, room.docId);
         }
       }
     }
