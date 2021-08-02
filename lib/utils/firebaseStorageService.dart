@@ -4,19 +4,25 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:mychat/models/mMessage.dart';
 
 class FirebaseStorageService {
-  static Future<String> uploadFile(File imageFile, {String fileName}) async {
+  static Future<String> uploadFile(
+      File imageFile, MMessage message, Function function,
+      {String fileName}) async {
     // The ref. to the new url
     String downloadedUrl;
 
-    final String name = fileName ?? DateTime.now().millisecondsSinceEpoch.toString();
-    final StorageReference reference = FirebaseStorage.instance.ref().child(name);
+    final String name =
+        fileName ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final StorageReference reference =
+        FirebaseStorage.instance.ref().child(name);
     final StorageUploadTask uploadTask = reference.putFile(imageFile);
     final StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
     await storageTaskSnapshot.ref.getDownloadURL().then(
       (downloadUrl) {
         downloadedUrl = downloadUrl;
+        function.call(downloadedUrl);
       },
       onError: (err) {
         Fluttertoast.showToast(msg: 'This file is not an image');

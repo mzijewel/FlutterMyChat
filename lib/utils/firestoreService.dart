@@ -284,8 +284,6 @@ class FirestoreService {
   static Future sendMessage(
       String roomId, MMessage message, File imgFile, bool isGroup) async {
     String imgDownloadUrl;
-    if (imgFile != null)
-      imgDownloadUrl = await FirebaseStorageService.uploadFile(imgFile);
 
     Map<String, dynamic> data = {
       'updatedAt': DateTime.now(),
@@ -293,12 +291,26 @@ class FirestoreService {
       'lastFromId': message.fromId,
     };
 
-    message.imgUrl = imgDownloadUrl;
+    // message.imgUrl = imgDownloadUrl;
     await _firestore
         .collection(_rooms)
         .doc(roomId)
         .collection(_messages)
-        .add(message.toMap());
+        .add(message.toMap())
+        .then((value) {
+      String docId = value.id;
+      print('Message docId: $docId');
+      if (imgFile != null)
+        FirebaseStorageService.uploadFile(imgFile, message, (url) {
+          message.imgUrl = url;
+          _firestore
+              .collection(_rooms)
+              .doc(roomId)
+              .collection(_messages)
+              .doc(docId)
+              .update({'imgUrl': url});
+        });
+    });
     await _firestore.collection(_rooms).doc(roomId).update(data);
   }
 

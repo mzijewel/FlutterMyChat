@@ -155,13 +155,15 @@ class _ChatScreenState extends State<ChatScreen> {
               if (message.imgUrl != null && message.imgUrl.isNotEmpty)
                 InkWell(
                   onTap: () => _openImage(message.imgUrl),
-                  child: CachedNetworkImage(
-                    imageUrl: message.imgUrl,
-                    width: Get.width * 0.6,
-                    placeholder: (context, url) => Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
+                  child: message.imgUrl.contains('/data')
+                      ? Image.file(File(message.imgUrl))
+                      : CachedNetworkImage(
+                          imageUrl: message.imgUrl,
+                          width: Get.width * 0.6,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
                 ),
               SizedBox(
                 height: 5,
@@ -224,20 +226,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   border: InputBorder.none,
                   hintText: 'Type a message',
                   filled: true,
+                  suffixIcon: InkWell(
+                    // borderRadius: BorderRadius.circular(30),
+                    splashColor: Colors.transparent,
+                    child: Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      _pickImage();
+                    },
+                  ),
                   fillColor: Constants.primaryColor,
                   hintStyle: TextStyle(color: Constants.txtColor2),
                 ),
               )),
-              Container(
-                color: Constants.primaryColor,
-                child: IconButton(
-                  color: Colors.white,
-                  icon: Icon(Icons.camera_alt),
-                  onPressed: () {
-                    _pickImage();
-                  },
-                ),
-              ),
             ],
           ),
         )),
@@ -265,7 +268,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage() async {
     if (room == null) return;
     String msg = _messageController.text;
-    if (msg.isEmpty) {
+    if (msg.isEmpty && pickedImgFile == null) {
       Fluttertoast.showToast(msg: 'Empty msg!');
       return;
     }
@@ -275,6 +278,7 @@ class _ChatScreenState extends State<ChatScreen> {
         fromId: currentUser.docId,
         fromName: LocatorService.authService().getUser().name,
         message: msg,
+        imgUrl: pickedImgFile.path,
         createdAt: DateTime.now());
     await FirestoreService.sendMessage(
         room.docId, message, pickedImgFile, false);
@@ -289,6 +293,8 @@ class _ChatScreenState extends State<ChatScreen> {
         await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       pickedImgFile = File(pickedImage.path);
+      _sendMessage();
+      print('image: ${pickedImage.path}');
     }
   }
 
