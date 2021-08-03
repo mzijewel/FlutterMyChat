@@ -27,6 +27,20 @@ class FirestoreService {
   static const String _activeMembers = 'activeMembers';
   static final String _chatHistory = 'chatHistory';
 
+  static Stream<List<MMessage>> getMessages(String roomId) {
+    return _firestore
+        .collection(_rooms)
+        .doc(roomId)
+        .collection('messages')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((querySnap) {
+      return querySnap.docs
+          .map((e) => MMessage.fromMap(convertDocumentToMap(e)))
+          .toList();
+    });
+  }
+
   static Stream<List<UnseenMessage>> unseenMessagesStream(String userId) {
     return _firestore
         .collection('$_users/$userId/$_unseenMessages')
@@ -312,15 +326,6 @@ class FirestoreService {
         });
     });
     await _firestore.collection(_rooms).doc(roomId).update(data);
-  }
-
-  static Stream getMessages(String roomId) {
-    return _firestore
-        .collection(_rooms)
-        .doc(roomId)
-        .collection('messages')
-        .orderBy('createdAt', descending: true)
-        .snapshots();
   }
 
   static Future<MRoom> getRoom(String myId, String friendId) async {
