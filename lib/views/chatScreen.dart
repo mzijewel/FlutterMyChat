@@ -157,7 +157,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: () => _openImage(message.imgUrl),
                   child: message.imgUrl.contains('/data')
                       // https://stackoverflow.com/questions/49835623/how-to-load-images-with-image-file/56431615
-                      ? Image.file(File(message.imgUrl))
+                      ? Image.file(
+                          File(message.imgUrl),
+                          width: Get.width * 0.6,
+                        )
                       : CachedNetworkImage(
                           imageUrl: message.imgUrl,
                           width: Get.width * 0.6,
