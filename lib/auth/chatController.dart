@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,11 +8,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mychat/models/User.dart';
 import 'package:mychat/models/mMessage.dart';
 import 'package:mychat/models/mRoom.dart';
+import 'package:mychat/models/onlineStatus.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/firestoreService.dart';
 
 class ChatController extends GetxController {
-  final _status = 'online'.obs;
+  final _onlineStatus = OnlineStatus().obs;
   final _messages = RxList<MMessage>();
   final TextEditingController messageController = TextEditingController();
   MRoom room;
@@ -21,11 +23,15 @@ class ChatController extends GetxController {
   void init(MRoom room, MUser toUser) {
     currentUser = LocatorService.authService().getUser();
     this.toUser = toUser;
+
     if (room == null) {
       getRoom();
     } else {
       this.room = room;
       _messages.bindStream(FirestoreService.getMessages(this.room.docId));
+      log('fID: ${room.getFriendId()}', name: 'FRID');
+      _onlineStatus
+          .bindStream(FirestoreService.getOnlineStatus(room.getFriendId()));
     }
   }
 
@@ -34,8 +40,12 @@ class ChatController extends GetxController {
     return toUser.name;
   }
 
+  String getFriendImgUrl() {
+    return room.getPhotoUrl();
+  }
+
   String getStatus() {
-    return _status.value;
+    return _onlineStatus.value.getStatus();
   }
 
   List<MMessage> getMessages() {
@@ -62,7 +72,7 @@ class ChatController extends GetxController {
         fromId: currentUser.docId,
         fromName: LocatorService.authService().getUser().name,
         message: msg,
-        imgUrl: pickedImgFile.path,
+        imgUrl: pickedImgFile?.path,
         createdAt: DateTime.now());
     await FirestoreService.sendMessage(
         room.docId, message, pickedImgFile, false);
@@ -112,7 +122,7 @@ class ChatController extends GetxController {
 
   void pickImage() async {
     final pickedImage =
-        await ImagePicker().getImage(source: ImageSource.gallery);
+    await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       pickedImgFile = File(pickedImage.path);
       sendMessage();

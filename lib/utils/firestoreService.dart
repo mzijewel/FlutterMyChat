@@ -7,6 +7,7 @@ import 'package:mychat/controller/controllerUsers.dart';
 import 'package:mychat/models/User.dart';
 import 'package:mychat/models/mMessage.dart';
 import 'package:mychat/models/mRoom.dart';
+import 'package:mychat/models/onlineStatus.dart';
 import 'package:mychat/models/unseenMessage.dart';
 import 'package:mychat/service/locator.dart';
 import 'package:mychat/utils/firebaseStorageService.dart';
@@ -17,6 +18,7 @@ class FirestoreService {
 
   static const String _users = 'myChat/1/users';
   static const String _rooms = 'myChat/1/rooms';
+  static const String _onlineStatus = 'myChat/1/onlineStatus';
   static const String _updatedAt = 'updatedAt';
   static const String _loginAt = 'loginAt';
   static const String _isOnline = 'isLogin';
@@ -38,6 +40,21 @@ class FirestoreService {
       return querySnap.docs
           .map((e) => MMessage.fromMap(convertDocumentToMap(e)))
           .toList();
+    });
+  }
+
+  static Stream<OnlineStatus> getOnlineStatus(String userId) {
+    return _firestore
+        .doc('$_onlineStatus/$userId')
+        .snapshots()
+        .handleError((e) => [])
+        .map((doc) {
+      if (doc != null && doc.data() != null) {
+        log("got: ${doc}", name: "TEST");
+        return OnlineStatus.fromMap(convertDocumentToMap(doc));
+      } else {
+        return OnlineStatus();
+      }
     });
   }
 
@@ -372,7 +389,7 @@ class FirestoreService {
 
   static Map<String, dynamic> convertDocumentToMap(DocumentSnapshot doc) {
     final Map<String, dynamic> data = doc.data();
-    data['docId'] = doc.id;
+    if (data != null) data['docId'] = doc.id;
     return data;
   }
 

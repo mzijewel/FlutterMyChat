@@ -57,7 +57,24 @@ class _ChatScreenState extends State<ChatScreen> {
       leadingWidth: 25,
       title: Row(
         children: [
-          CircleAvatar(),
+          !widget.room.isGroup
+              ? ClipOval(
+                  child: CachedNetworkImage(
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    imageUrl: widget.room.getPhotoUrl(),
+                  ),
+                )
+              : CircleAvatar(
+                  maxRadius: 25,
+                  foregroundColor: Colors.red,
+                  backgroundColor: Constants.primaryColor,
+                  child: Text(
+                    '${widget.room.title.substring(0, 1).toUpperCase()}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
           SizedBox(
             width: 10,
           ),

@@ -11,6 +11,7 @@ class Utils {
   }
 
   static String getDateTimeStr(DateTime dateTime) {
+    if (dateTime == null) return "";
     return DateFormat('dd MMM, hh:mm a').format(dateTime);
   }
 

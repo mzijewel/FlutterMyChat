@@ -51,13 +51,15 @@ class MRoom {
     return title;
   }
 
+  String getFriendId() {
+    String myId = LocatorService.authService().getUser().docId;
+    return members.firstWhere((element) => element != myId);
+  }
+
   String getPhotoUrl() {
     String url = Constants.tmpImgUrl;
     if (!isGroup) {
-      String myId = LocatorService
-          .authService()
-          .getUser()
-          .docId;
+      String myId = LocatorService.authService().getUser().docId;
 
       avatars.forEach((key, value) {
         if (key != myId) {
